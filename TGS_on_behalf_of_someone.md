@@ -255,14 +255,14 @@ Ticket got on behalf of other user without password, GIUDA betrayed!
 
 
 
-### Then? If you make the right request then a TGS is the same as a TGT
+### Then? If you make the right request, then a TGS is the same as a TGT
 
 Obtaining a TGS ticket is certainly a significant achievement, but there's more to explore. Did you know that a TGT ticket is essentially a TGS ticket for the krbtgt service? In fact, with a TGS ticket for krbtgt, you can use it to request additional TGS tickets. And that's the key insight!
 
 ![immagine](https://github.com/user-attachments/assets/ccf117d0-6409-4de6-b3d3-d9bdbaabb024)
 
 
-Hei Gringo your car is vavavumaaaaaaa (https://www.youtube.com/watch?v=MS5lh7BDFoc)
+Ehi Gringo your car is vavavumaaaaaaa (https://www.youtube.com/watch?v=MS5lh7BDFoc)
 
 ![immagine](https://github.com/user-attachments/assets/c33bce71-23b4-4211-9d62-d4cc1ad38747)
 
