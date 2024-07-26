@@ -50,17 +50,17 @@ LONG HighPart;
 } LUID, *PLUID;
 ```
 
-The LUID itself is represented by two values: DWORD (ULONG) and Longint (LONG). In this case, usually only the field is filled in LowPart and HighPart matters.
+The LUID is represented by two values: DWORD (ULONG) and Longint (LONG). Typically, only the LowPart field is filled, while the HighPart remains relevant but less commonly used.
 
 This structure is used by all WinAPI functions that are somehow related to user sessions.
 
-Using the GetTokenInformation() you can find out the custom LUID.
+You can use the GetTokenInformation() function to retrieve the custom LUID.
 
-Now it's time to show how Kerberos tickets are requested by the LSA itself. This will help us spoof the LUID and get someone else's ticket.
+Now it's time to demonstrate how Kerberos tickets are requested by the LSA. This process will help us spoof the LUID and obtain someone else's ticket.
 
 ### How the LSA requests Kerberos tickets
 
-To request a TGS ticket, the LSA receives an SPN (service principal name) and passes it to the KDC. We can request TGS tickets ourselves. For this, there is a function LsaCallAuthenticationPackage().
+To request a TGS ticket, the LSA receives a Service Principal Name (SPN) and passes it to the KDC. We can request TGS tickets ourselves using the LsaCallAuthenticationPackage() function.
 
 Pascal
 ```
@@ -89,7 +89,7 @@ NTSTATUS LsaCallAuthenticationPackage(
 
 where:
 
-LsaHandle - A handle pointing to the LSA service, which can be retrieved using LsaRegisterLogonProcess() or LsaConnectUntrusted();
+LsaHandle - A handle pointing to the LSA service can be retrieved using either LsaRegisterLogonProcess() or LsaConnectUntrusted();
 
 AuthenticationPackage - The AP number that you want to interact with.
 
@@ -103,8 +103,7 @@ ReturnBufferLength — the size of the buffer with the response;
 
 ProtocolStatus is a value that will contain the error code from the AP.
 
-
-So, how to fill it out KERB_RETRIEVE_TKT_REQUESTto get a TGS ticket? The structure looks like this:
+So, how do you fill out the KERB_RETRIEVE_TKT_REQUEST structure to obtain a TGS ticket? The structure looks like this:
 
 Pascal
 ```
@@ -135,9 +134,9 @@ typedef struct _KERB_RETRIEVE_TKT_REQUEST {
 
 where:
 
-MessageType is what we need to get from the AP. Specify KerbRetrieveEncodedTicketMessage;
+MessageType: To obtain a TGS ticket, set the MessageType field to KerbRetrieveEncodedTicketMessage;
 
-LogonID is the LUID of the session on behalf of which the AP is accessed. This is when the LUID will be substituted. The problem is that if we connect to the LSA via LsaConnectUntrusted(), we won't be able to specify the LUID of someone else's session here — the LSA will throw a 0x5 ERROR_ACCESS_DENIED error, but if we connect via LsaRegisterLogonProcess(), we can pass any desired LUID here. And in this way we will be able to request tickets from someone else's session;
+LogonID: Set the LogonID to the LUID of the session on whose behalf the AP is accessed. This is where the LUID will be substituted. However, if you connect to the LSA using LsaConnectUntrusted(), you won't be able to specify the LUID of another session, as this will result in a 0x5 ERROR_ACCESS_DENIED error. On the other hand, if you connect via LsaRegisterLogonProcess(), you can provide any LUID you choose, allowing you to request tickets from another user's session.;
 
 TargetName — here specify the SPN of the service to which you want to get a ticket;
 
