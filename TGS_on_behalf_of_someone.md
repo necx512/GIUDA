@@ -31,11 +31,6 @@
 # Let's go
 
 ### Request a TGS (or better a TGT!) on behalf of another logged user:
-1. What is (for the umpteenth time) a TGT
-2. What's a Logon session
-3. How the LSA requests Kerberos tickets
-4. Stealing a TGT ticket
-5. Then? If you make the right request then a TGS is the same as a TGT
 
 There are several methods to compromise a user's session on a device. Surprisingly, one of these involves spoofing a TGT ticket receipt using legitimate Windows functions
 
