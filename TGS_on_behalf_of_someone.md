@@ -28,6 +28,7 @@ Each ticket contains information about a specific resource and is protected by a
 
 
 Logon session
+
 When a user is authorized in Windows, a user session is created, in which all user data is stored. A new session is created for all new users. For example, if there are two users on the machine at the same time, there will be two sessions.
 
 ![immagine](https://github.com/user-attachments/assets/b47233c7-510a-401a-9a10-207c7c8e722b)
@@ -51,11 +52,11 @@ LONG HighPart;
 } LUID, *PLUID;
 ```
 
-The LUID itself is represented by two values: ULONG and LONG. In this case, usually only the field is filled in LowPartand HighPart matters.
+The LUID itself is represented by two values: DWORD (ULONG) and Longint (LONG). In this case, usually only the field is filled in LowPart and HighPart matters.
 
 This structure is used by all WinAPI functions that are somehow related to user sessions.
 
-Using the GetTokenInformation() you can find out the custom LUID. To do this, the function must be passed a token of the process running on behalf of the current user.
+Using the GetTokenInformation() you can find out the custom LUID.
 
 Now it's time to show how Kerberos tickets are requested by the LSA itself. This will help us spoof the LUID and get someone else's ticket.
 
@@ -141,7 +142,7 @@ LogonID is the LUID of the session on behalf of which the AP is accessed. This i
 
 TargetName — here specify the SPN of the service to which you want to get a ticket;
 
-CacheOptions - Options related to the LSA cache. The LSA cache is a kind of storage in which tickets are stored. There are some peculiarities here too. If we immediately specify the KERB_RETRIEVE_TICKET_AS_KERB_CRED (the value for obtaining a ticket in the form KRB_CRED, immediately with the session key; details are in my other article), then there is a chance that you will not get a ticket. The problem is that the LSA cache may not have a ticket for the service we want to go to. And if we immediately indicate KERB_RETRIEVE_TICKET_AS_KERB_CRED, then the LSA may simply not return any ticket, since there is nothing to return. Therefore, you will have to call the LsaCallAuthenticationPackage() function twice. The first time is with the meaning of KERB_RETRIEVE_TICKET_DEFAULT, the second time is with KERB_RETRIEVE_TICKET_AS_KERB_CRED. … DEFAULT is responsible for requesting a ticket. That is, we ask the LSA to contact the KDC and get a ticket;
+CacheOptions - Options related to the LSA cache. The LSA cache is a kind of storage in which tickets are stored. There are some peculiarities here too. If we immediately specify the KERB_RETRIEVE_TICKET_AS_KERB_CRED (the value for obtaining a ticket in the form KRB_CRED, immediately with the session key), then there is a chance that you will not get a ticket. The problem is that the LSA cache may not have a ticket for the service we want to go to. And if we immediately indicate KERB_RETRIEVE_TICKET_AS_KERB_CRED, then the LSA may simply not return any ticket, since there is nothing to return. Therefore, you will have to call the LsaCallAuthenticationPackage() function twice. The first time is with the meaning of KERB_RETRIEVE_TICKET_DEFAULT, the second time is with KERB_RETRIEVE_TICKET_AS_KERB_CRED. … DEFAULT is responsible for requesting a ticket. That is, we ask the LSA to contact the KDC and get a ticket;
 
 EncryptionType - The desired type of encryption for the requested ticket. Specify KERB_ETYPE_DEFAULT — the type of encryption is not important to us;
 
@@ -230,7 +231,7 @@ Ticket got on behalf of other user without password, GIUDA betrayed!
 
 Then?
 
-TGT is a TGS
+If you make the right request then a TGS is the same as a TGT
 
 It would seem that getting a TGS ticket is a great result! But you always want more, right? Did you know that a TGT ticket is actually a TGS ticket, but for the krbtgt service? It turns out that we have a TGS ticket for krbtgt, and the krbtgt service allows us to issue other TGS tickets. That's all.
 ![immagine](https://github.com/user-attachments/assets/ccf117d0-6409-4de6-b3d3-d9bdbaabb024)
@@ -241,4 +242,4 @@ Hei Gringo your car is vavavumaaaaaaa
 ![immagine](https://github.com/user-attachments/assets/c33bce71-23b4-4211-9d62-d4cc1ad38747)
 
 
-We can request other people's TGT tickets! Thus, if during a pentest it was possible to capture a host where users go, then using TGSThief it will be possible to get TGT of these users. Moreover, TGT tickets will be absolutely fresh, new, just requested.
+We can request other people's TGT tickets! Great GIUDA, it's time to continue to betray
