@@ -3,7 +3,7 @@
 "Hello... Iscariota's house?"
 "Yes...!"
 "Is GIUDA there?"
-"No, he went to a dinner...!"
+"No, he went to dinner...!"
 "Again?"
 "Yes, but he said it's the last one."
 "Sure?!?!?"
