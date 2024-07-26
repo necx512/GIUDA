@@ -25,18 +25,19 @@ GIUDA allows you to get the tickets of the logged-in user even without having hi
 A Ticket Granting Ticket (TGT) is a unique type of ticket issued to a user upon successful authentication in the Kerberos system. Generated using the user's password, the TGT ensures that the password is never transmitted over the network, enhancing security..
 
 Here's how TGT works.
+1. **User Authentication:**
+    - The user enters their login and password.
+    - The Kerberos authentication server verifies the password.
+    - Upon successful authentication, the server issues a Ticket Granting Ticket (TGT).
 
-1. User authentication:
-    The user enters his login and password.
-    The Kerberos authentication server verifies that the password is correct.
-    If authentication is successful, the server generates a TGT.
-2. TGT Issuance:
-    The TGT contains information about the user, the time of their authentication, and other metadata.
-    The TGT also contains a session key that will be used for further communication.
-3. Using TGT to get other tickets:
-    A user can use TGT to request tickets to access various resources on the network.
-Each ticket contains information about a specific resource and is protected by a session key, which ensures the security of the transfer.
+2. **TGT Issuance:**
+    - The TGT contains information about the user, the time of authentication, and other metadata.
+    - It also includes a session key used for further communication.
 
+3. **Using the TGT to Obtain Other Tickets:**
+    - The user can present the TGT to request additional tickets for accessing various network resources.
+    - Each ticket is specific to a resource and is protected by a session key, ensuring secure communication.
+      
 
 ### What's a Logon session
 
