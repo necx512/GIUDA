@@ -1,10 +1,10 @@
-Content:
-1. What is TGT
-2. Logon session
+Request a TGS (or better a TGT!) on behalf of another logged user:
+1. What is (for the umpteenth time) a TGT
+2. What's a Logon session
 3. How the LSA requests Kerberos tickets
-4. TGT Ticket Theft
-5. TGT is TGS
-6. Conclusion
+4. Stole a TGT Ticket
+5. If you make the right request then a TGS is the same as a TGT
+
 
 There are various ways to abuse a user's session on a device. But did you know that it is possible to spoof a TGT ticket receipt by a user using legitimate Windows functions?
 
@@ -149,7 +149,7 @@ EncryptionType - The desired type of encryption for the requested ticket. Specif
 CredentialsHandle - Used for SSPI, it doesn't matter in this case.
 
 
-TGT Ticket Theft
+Stole a TGT Ticket
 
 We've figured out how Kerberos ticket request works on a local system. It's time to move on to operation!
 First we list all the available sessions with undetected method "KLIST SESSIONS" --- ;-)
