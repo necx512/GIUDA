@@ -154,7 +154,9 @@ TargetName: Set TargetName to specify the SPN (Service Principal Name) of the se
 
 CacheOptions: CacheOptions controls how the LSA cache is used. The LSA cache stores tickets, but it has some nuances. If you specify KERB_RETRIEVE_TICKET_AS_KERB_CRED (which requests the ticket in the form of KRB_CRED along with the session key) right away, there’s a risk that you might not receive a ticket. This is because the LSA cache might not have the ticket for the desired service. If the cache lacks the ticket and you request it as KRB_CRED, the LSA may return nothing, since there is no ticket to return. To address this, you should call LsaCallAuthenticationPackage() twice: first with KERB_RETRIEVE_TICKET_DEFAULT to request the ticket, allowing the LSA to contact the KDC and obtain it, and then with KERB_RETRIEVE_TICKET_AS_KERB_CRED to get the ticket in the desired format, including the session key;
 
-EncryptionType: Set EncryptionType to specify the desired encryption type for the requested ticket. Use KERB_ETYPE_DEFAULT if the specific encryption type is not important. Note: For CredentialsHandle, which is used for SSPI, it is not relevant in this context.
+EncryptionType: Set EncryptionType to specify the desired encryption type for the requested ticket. Use KERB_ETYPE_DEFAULT if the specific encryption type is not important.
+
+CredentialsHandle, which is used for SSPI, it is not relevant in this context.
 
 
 ### Stealing a TGT ticket
