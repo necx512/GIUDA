@@ -153,7 +153,8 @@ TGT Ticket Theft
 We've figured out how Kerberos ticket request works on a local system. It's time to move on to operation!
 First we list all the available sessions with undetected method "KLIST SESSIONS" --- ;-)
 
-![immagine](https://github.com/user-attachments/assets/1668edd0-ad09-4ef5-aa85-9ba261847f30)
+![immagine](https://github.com/user-attachments/assets/f6cb4c98-8db8-4c64-9de0-0e8c22f16b63)
+
 
 The next step is to connect to the LSA using LsaRegisterLogonProcess()to pass the LUID to someone else's session. To call this function, you need the SeTcbPrivilege.
 
@@ -222,6 +223,9 @@ pKerbRetrieveRequest->CacheOptions = KERB_RETRIEVE_TICKET_AS_KERB_CRED;
 ```
 
 Ticket got on behalf of other user without password, GIUDA betrayed!
+
+![254639818-d1ce1a96-a6fc-4588-ade8-1212d7140cfa](https://github.com/user-attachments/assets/4e359fa8-db1c-4a9d-a22e-a5e4560de3c5)
+
 
 Then?
 
