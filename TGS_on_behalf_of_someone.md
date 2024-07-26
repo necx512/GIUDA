@@ -224,13 +224,18 @@ pKerbRetrieveRequest->CacheOptions = KERB_RETRIEVE_TICKET_AS_KERB_CRED;
 
 Ticket got on behalf of other user without password, GIUDA betrayed!
 
-![254639818-d1ce1a96-a6fc-4588-ade8-1212d7140cfa](https://github.com/user-attachments/assets/4e359fa8-db1c-4a9d-a22e-a5e4560de3c5)
+![immagine](https://github.com/user-attachments/assets/ccf117d0-6409-4de6-b3d3-d9bdbaabb024)
 
 
 Then?
 
-TGT is TGS
+TGT is a TGS
+
 It would seem that getting a TGS ticket is a great result! But you always want more, right? Did you know that a TGT ticket is actually a TGS ticket, but for the krbtgt service? It turns out that we have a TGS ticket for krbtgt, and the krbtgt service allows us to issue other TGS tickets. That's all.
 
 Hei Gringo your car is vavavumaaaaaaa
+
+![immagine](https://github.com/user-attachments/assets/c33bce71-23b4-4211-9d62-d4cc1ad38747)
+
+
 We can request other people's TGT tickets! Thus, if during a pentest it was possible to capture a host where users go, then using TGSThief it will be possible to get TGT of these users. Moreover, TGT tickets will be absolutely fresh, new, just requested.
