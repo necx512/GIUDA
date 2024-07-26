@@ -138,24 +138,23 @@ MessageType: To obtain a TGS ticket, set the MessageType field to KerbRetrieveEn
 
 LogonID: Set the LogonID to the LUID of the session on whose behalf the AP is accessed. This is where the LUID will be substituted. However, if you connect to the LSA using LsaConnectUntrusted(), you won't be able to specify the LUID of another session, as this will result in a 0x5 ERROR_ACCESS_DENIED error. On the other hand, if you connect via LsaRegisterLogonProcess(), you can provide any LUID you choose, allowing you to request tickets from another user's session.;
 
-TargetName — here specify the SPN of the service to which you want to get a ticket;
+TargetName: Set TargetName to specify the SPN (Service Principal Name) of the service for which you want to obtain a ticket;
 
-CacheOptions - Options related to the LSA cache. The LSA cache is a kind of storage in which tickets are stored. There are some peculiarities here too. If we immediately specify the KERB_RETRIEVE_TICKET_AS_KERB_CRED (the value for obtaining a ticket in the form KRB_CRED, immediately with the session key), then there is a chance that you will not get a ticket. The problem is that the LSA cache may not have a ticket for the service we want to go to. And if we immediately indicate KERB_RETRIEVE_TICKET_AS_KERB_CRED, then the LSA may simply not return any ticket, since there is nothing to return. Therefore, you will have to call the LsaCallAuthenticationPackage() function twice. The first time is with the meaning of KERB_RETRIEVE_TICKET_DEFAULT, the second time is with KERB_RETRIEVE_TICKET_AS_KERB_CRED. … DEFAULT is responsible for requesting a ticket. That is, we ask the LSA to contact the KDC and get a ticket;
+CacheOptions: CacheOptions controls how the LSA cache is used. The LSA cache stores tickets, but it has some nuances. If you specify KERB_RETRIEVE_TICKET_AS_KERB_CRED (which requests the ticket in the form of KRB_CRED along with the session key) right away, there’s a risk that you might not receive a ticket. This is because the LSA cache might not have the ticket for the desired service. If the cache lacks the ticket and you request it as KRB_CRED, the LSA may return nothing, since there is no ticket to return. To address this, you should call LsaCallAuthenticationPackage() twice: first with KERB_RETRIEVE_TICKET_DEFAULT to request the ticket, allowing the LSA to contact the KDC and obtain it, and then with KERB_RETRIEVE_TICKET_AS_KERB_CRED to get the ticket in the desired format, including the session key;
 
-EncryptionType - The desired type of encryption for the requested ticket. Specify KERB_ETYPE_DEFAULT — the type of encryption is not important to us;
-
-CredentialsHandle - Used for SSPI, it doesn't matter in this case.
+EncryptionType: Set EncryptionType to specify the desired encryption type for the requested ticket. Use KERB_ETYPE_DEFAULT if the specific encryption type is not important. Note: For CredentialsHandle, which is used for SSPI, it is not relevant in this context.
 
 
 ### Stealing a TGT ticket
 
-We've figured out how Kerberos ticket request works on a local system. It's time to move on to operation!
-First we list all the available sessions with undetected method "KLIST SESSIONS" --- ;-)
+Now that we understand how Kerberos ticket requests work on a local system, let's move on to the operations.
+
+First, list all available sessions using the undetected method: KLIST SESSIONS. --- ;-)
 
 ![immagine](https://github.com/user-attachments/assets/f6cb4c98-8db8-4c64-9de0-0e8c22f16b63)
 
 
-The next step is to connect to the LSA using LsaRegisterLogonProcess()to pass the LUID to someone else's session. To call this function, you need the SeTcbPrivilege.
+The next step is to connect to the LSA using LsaRegisterLogonProcess() in order to use the LUID from another session. To call this function, you will need the SeTcbPrivilege.
 
 Pascal
 ```
@@ -175,7 +174,7 @@ NTSTATUS LsaRegisterLogonProcess(
 );
 ```
 
-The next step is to use LsaLookupAuthenticationPackage() get the Kerberos AP number.
+Next, use LsaLookupAuthenticationPackage() to retrieve the Kerberos AP number.
 
 Pascal
 ```
@@ -195,13 +194,12 @@ NTSTATUS LsaLookupAuthenticationPackage(
 );
 ```
 
-Finally, we have the handle, the LUID, and the Kerberos AP number. It's time for GIUDA to betray
+With the handle, LUID, and Kerberos AP number in hand, it's time to proceed with the next step.
 
-To do this I used the function kuhl_m_kerberos_ask(target:string;export_:bool=false;logonid:int64=0):NTSTATUS;
+Use the function kuhl_m_kerberos_ask(target:string; export_:bool=false; logonid:int64=0):NTSTATUS;. This function calls LsaCallAuthenticationPackage to instruct the LSA to contact the KDC and obtain a new ticket. Initially, the ticket you receive will not be valid, as it will lack a session key and cannot be used.
 
-This function uses LsaCallAuthenticationPackage to call the LSA, and LSA will now contact the KDC and receive a new ticket. If we try to extract it right away, it will not be valid. More precisely, it will not have a session key and you will not be able to use it.
+After verifying that the call was successful, update CacheOptions to KERB_RETRIEVE_TICKET_AS_KERB_CRED and make another call to the LSA to retrieve a valid ticket.
 
-Therefore, after making sure that the call was successful, change CacheOptions to KERB_RETRIEVE_TICKET_AS_KERB_CRED and refer to the LSA.
 
 Pascal
 ```
@@ -229,11 +227,12 @@ Ticket got on behalf of other user without password, GIUDA betrayed!
 
 ### Then? If you make the right request then a TGS is the same as a TGT
 
-It would seem that getting a TGS ticket is a great result! But you always want more, right? Did you know that a TGT ticket is actually a TGS ticket, but for the krbtgt service? It turns out that we have a TGS ticket for krbtgt, and the krbtgt service allows us to issue other TGS tickets. That's all.
+Obtaining a TGS ticket is certainly a significant achievement, but there's more to explore. Did you know that a TGT ticket is essentially a TGS ticket for the krbtgt service? In fact, with a TGS ticket for krbtgt, you can use it to request additional TGS tickets. And that's the key insight!
+
 ![immagine](https://github.com/user-attachments/assets/ccf117d0-6409-4de6-b3d3-d9bdbaabb024)
 
 
-Hei Gringo your car is vavavumaaaaaaa
+Hei Gringo your car is vavavumaaaaaaa (https://www.youtube.com/watch?v=MS5lh7BDFoc)
 
 ![immagine](https://github.com/user-attachments/assets/c33bce71-23b4-4211-9d62-d4cc1ad38747)
 
