@@ -224,7 +224,8 @@ pKerbRetrieveRequest->CacheOptions = KERB_RETRIEVE_TICKET_AS_KERB_CRED;
 
 Ticket got on behalf of other user without password, GIUDA betrayed!
 
-![immagine](https://github.com/user-attachments/assets/ccf117d0-6409-4de6-b3d3-d9bdbaabb024)
+![immagine](https://github.com/user-attachments/assets/b1dda5b8-ec6b-49f6-b7c0-425958bee7e2)
+
 
 
 Then?
@@ -232,6 +233,8 @@ Then?
 TGT is a TGS
 
 It would seem that getting a TGS ticket is a great result! But you always want more, right? Did you know that a TGT ticket is actually a TGS ticket, but for the krbtgt service? It turns out that we have a TGS ticket for krbtgt, and the krbtgt service allows us to issue other TGS tickets. That's all.
+![immagine](https://github.com/user-attachments/assets/ccf117d0-6409-4de6-b3d3-d9bdbaabb024)
+
 
 Hei Gringo your car is vavavumaaaaaaa
 
