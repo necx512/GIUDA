@@ -28,6 +28,7 @@
    - **Personal Preference**: Some malware creators may simply prefer Pascal or have more experience with it compared to C#. The choice of language can reflect their personal experience and skill set.
 
 
+# Let's go
 
 ### Request a TGS (or better a TGT!) on behalf of another logged user:
 1. What is (for the umpteenth time) a TGT
