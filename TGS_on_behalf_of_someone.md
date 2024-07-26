@@ -34,6 +34,7 @@ When a user is authorized in Windows, a user session is created, in which all us
 
 Each session has a LUID (Locally Unique Identifier) name. As the name suggests, LUID is unique for each session. The information is stored in a structure format.
 
+Pascal
 ```
 type
     _LUID = record
@@ -42,6 +43,7 @@ type
   end;
 ```
 
+C
 ```
 typedef struct _LUID {
 ULONG LowPart;
@@ -60,6 +62,7 @@ Now it's time to show how Kerberos tickets are requested by the LSA itself. This
 How the LSA requests Kerberos tickets
 To request a TGS ticket, the LSA receives an SPN (service principal name) and passes it to the KDC. We can request TGS tickets ourselves. For this, there is a function LsaCallAuthenticationPackage().
 
+Pascal
 ```
 function LsaCallAuthenticationPackage (
     LsaHandle : THandle;
@@ -71,6 +74,7 @@ function LsaCallAuthenticationPackage (
     var ProtocolStatus : NTStatus) : NTSTATUS; stdcall;
 ```
 
+C
 ```
 NTSTATUS LsaCallAuthenticationPackage(
   [in]  HANDLE  LsaHandle,
@@ -84,13 +88,21 @@ NTSTATUS LsaCallAuthenticationPackage(
 ```
 
 where:
+
 LsaHandle - A handle pointing to the LSA service, which can be retrieved using LsaRegisterLogonProcess() or LsaConnectUntrusted();
+
 AuthenticationPackage - The AP number that you want to interact with.
+
 ProtocolSubmitBuffer — the buffer being passed, we will give KERB_RETRIEVE_TKT_REQUEST;
+
 SubmitBufferLength is the size of the buffer to be transferred;
+
 ProtocolReturnBuffer is the response from AuthenticationPackage. The structure of the KERB_RETRIEVE_TKT_RESPONSE will fly to us;
+
 ReturnBufferLength — the size of the buffer with the response;
+
 ProtocolStatus is a value that will contain the error code from the AP.
+
 
 So, how to fill it out KERB_RETRIEVE_TKT_REQUESTto get a TGS ticket? The structure looks like this:
 
