@@ -226,7 +226,7 @@ NTSTATUS LsaLookupAuthenticationPackage(
 
 With the handle, LUID, and Kerberos AP number in hand, it's time to proceed with the next step.
 
-Use the function kuhl_m_kerberos_ask(target:string; export_:bool=false; logonid:int64=0):NTSTATUS;. This function calls LsaCallAuthenticationPackage to instruct the LSA to contact the KDC and obtain a new ticket. Initially, the ticket you receive will not be valid, as it will lack a session key and cannot be used.
+Use the function ```kuhl_m_kerberos_ask(target:string; export_:bool=false; logonid:int64=0):NTSTATUS;```. This function calls LsaCallAuthenticationPackage to instruct the LSA to contact the KDC and obtain a new ticket. Initially, the ticket you receive will not be valid, as it will lack a session key and cannot be used.
 
 After verifying that the call was successful, update CacheOptions to KERB_RETRIEVE_TICKET_AS_KERB_CRED and make another call to the LSA to retrieve a valid ticket.
 
