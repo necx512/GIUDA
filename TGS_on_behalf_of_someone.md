@@ -1,4 +1,4 @@
-Request a TGS (or better a TGT!) on behalf of another logged user:
+### Request a TGS (or better a TGT!) on behalf of another logged user:
 1. What is (for the umpteenth time) a TGT
 2. What's a Logon session
 3. How the LSA requests Kerberos tickets
@@ -10,7 +10,7 @@ There are various ways to abuse a user's session on a device. But did you know t
 
 Giuda allows you to get the tickets of the logged-in user even without having his password! Today we will understand how GIUDA works
 
-###What is (for the umpteenth time) a TGT
+### What is (for the umpteenth time) a TGT
 
 A TGT is a special type of ticket that is issued to a user upon successful authentication in the Kerberos system. This process is carried out using the user's password and prevents the password from being transmitted over the network.
 
@@ -28,7 +28,7 @@ Here's how TGT works.
 Each ticket contains information about a specific resource and is protected by a session key, which ensures the security of the transfer.
 
 
-###What's a Logon session
+### What's a Logon session
 
 When a user is authorized in Windows, a user session is created, in which all user data is stored. A new session is created for all new users on the Windows machine.
 
@@ -59,7 +59,7 @@ Using the GetTokenInformation() you can find out the custom LUID.
 
 Now it's time to show how Kerberos tickets are requested by the LSA itself. This will help us spoof the LUID and get someone else's ticket.
 
-###How the LSA requests Kerberos tickets
+### How the LSA requests Kerberos tickets
 
 To request a TGS ticket, the LSA receives an SPN (service principal name) and passes it to the KDC. We can request TGS tickets ourselves. For this, there is a function LsaCallAuthenticationPackage().
 
@@ -149,7 +149,7 @@ EncryptionType - The desired type of encryption for the requested ticket. Specif
 CredentialsHandle - Used for SSPI, it doesn't matter in this case.
 
 
-###Stealing a TGT ticket
+### Stealing a TGT ticket
 
 We've figured out how Kerberos ticket request works on a local system. It's time to move on to operation!
 First we list all the available sessions with undetected method "KLIST SESSIONS" --- ;-)
@@ -229,7 +229,7 @@ Ticket got on behalf of other user without password, GIUDA betrayed!
 
 
 
-###Then? If you make the right request then a TGS is the same as a TGT
+### Then? If you make the right request then a TGS is the same as a TGT
 
 It would seem that getting a TGS ticket is a great result! But you always want more, right? Did you know that a TGT ticket is actually a TGS ticket, but for the krbtgt service? It turns out that we have a TGS ticket for krbtgt, and the krbtgt service allows us to issue other TGS tickets. That's all.
 ![immagine](https://github.com/user-attachments/assets/ccf117d0-6409-4de6-b3d3-d9bdbaabb024)
