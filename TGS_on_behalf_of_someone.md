@@ -106,6 +106,7 @@ ProtocolStatus is a value that will contain the error code from the AP.
 
 So, how to fill it out KERB_RETRIEVE_TKT_REQUESTto get a TGS ticket? The structure looks like this:
 
+Pascal
 ```
 KERB_RETRIEVE_TKT_REQUEST =record
     MessageType:KERB_PROTOCOL_MESSAGE_TYPE;
@@ -119,6 +120,7 @@ KERB_RETRIEVE_TKT_REQUEST =record
     PKERB_RETRIEVE_TKT_REQUEST=^KERB_RETRIEVE_TKT_REQUEST;
 ```
 
+C
 ```
 typedef struct _KERB_RETRIEVE_TKT_REQUEST {
   KERB_PROTOCOL_MESSAGE_TYPE MessageType;
@@ -132,15 +134,22 @@ typedef struct _KERB_RETRIEVE_TKT_REQUEST {
 ```
 
 where:
+
 MessageType is what we need to get from the AP. Specify KerbRetrieveEncodedTicketMessage;
+
 LogonID is the LUID of the session on behalf of which the AP is accessed. This is when the LUID will be substituted. The problem is that if we connect to the LSA via LsaConnectUntrusted(), we won't be able to specify the LUID of someone else's session here — the LSA will throw a 0x5 ERROR_ACCESS_DENIED error, but if we connect via LsaRegisterLogonProcess(), we can pass any desired LUID here. And in this way we will be able to request tickets from someone else's session;
+
 TargetName — here specify the SPN of the service to which you want to get a ticket;
+
 CacheOptions - Options related to the LSA cache. The LSA cache is a kind of storage in which tickets are stored. There are some peculiarities here too. If we immediately specify the KERB_RETRIEVE_TICKET_AS_KERB_CRED (the value for obtaining a ticket in the form KRB_CRED, immediately with the session key; details are in my other article), then there is a chance that you will not get a ticket. The problem is that the LSA cache may not have a ticket for the service we want to go to. And if we immediately indicate KERB_RETRIEVE_TICKET_AS_KERB_CRED, then the LSA may simply not return any ticket, since there is nothing to return. Therefore, you will have to call the LsaCallAuthenticationPackage() function twice. The first time is with the meaning of KERB_RETRIEVE_TICKET_DEFAULT, the second time is with KERB_RETRIEVE_TICKET_AS_KERB_CRED. … DEFAULT is responsible for requesting a ticket. That is, we ask the LSA to contact the KDC and get a ticket;
+
 EncryptionType - The desired type of encryption for the requested ticket. Specify KERB_ETYPE_DEFAULT — the type of encryption is not important to us;
+
 CredentialsHandle - Used for SSPI, it doesn't matter in this case.
 
 
 TGT Ticket Theft
+
 We've figured out how Kerberos ticket request works on a local system. It's time to move on to operation!
 First we list all the available sessions with undetected method "KLIST SESSIONS" --- ;-)
 
@@ -148,6 +157,7 @@ First we list all the available sessions with undetected method "KLIST SESSIONS"
 
 The next step is to connect to the LSA using LsaRegisterLogonProcess()to pass the LUID to someone else's session. To call this function, you need the SeTcbPrivilege.
 
+Pascal
 ```
 LsaRegisterLogonProcess:function(
      LogonProcessName:PLSA_STRING;
@@ -156,7 +166,7 @@ LsaRegisterLogonProcess:function(
   ):NTSTATUS;stdcall;
 ```
 
-
+C
 ```
 NTSTATUS LsaRegisterLogonProcess(
   [in]  PLSA_STRING           LogonProcessName,
@@ -167,6 +177,7 @@ NTSTATUS LsaRegisterLogonProcess(
 
 The next step is to use LsaLookupAuthenticationPackage() get the Kerberos AP number.
 
+Pascal
 ```
   LsaLookupAuthenticationPackage:function(
        LsaHandle:HANDLE;
@@ -175,6 +186,7 @@ The next step is to use LsaLookupAuthenticationPackage() get the Kerberos AP num
  ):NTSTATUS ;stdcall;
 ```
 
+C
 ```
 NTSTATUS LsaLookupAuthenticationPackage(
   [in]  HANDLE      LsaHandle,
@@ -190,6 +202,8 @@ To do this I used the function kuhl_m_kerberos_ask(target:string;export_:bool=fa
 This function uses LsaCallAuthenticationPackage to call the LSA, and LSA will now contact the KDC and receive a new ticket. If we try to extract it right away, it will not be valid. More precisely, it will not have a session key and you will not be able to use it.
 
 Therefore, after making sure that the call was successful, change CacheOptions to KERB_RETRIEVE_TICKET_AS_KERB_CRED and refer to the LSA.
+
+Pascal
 ```
 (first call to LsaCallAuthenticationPackage)
 pKerbRetrieveRequest^.CacheOptions :=  KERB_RETRIEVE_TICKET_DEFAULT;
@@ -198,6 +212,7 @@ pKerbRetrieveRequest^.CacheOptions :=  KERB_RETRIEVE_TICKET_DEFAULT;
 pKerbRetrieveRequest^.CacheOptions:= pKerbRetrieveRequest^.CacheOptions or  KERB_RETRIEVE_TICKET_AS_KERB_CRED;
 ```
 
+C
 ```
 (first call to LsaCallAuthenticationPackage)
 pKerbRetrieveRequest->CacheOptions = KERB_RETRIEVE_TICKET_DEFAULT;
