@@ -9,7 +9,7 @@
 "Sure?!?!?"
 ```
 
-### Reasons for Using Pascal to Create Malware Instead of C#
+### Reasons for Using Pascal to Create Malware Instead of C# and C++
 
 1. **Evasion of Security Tools**
    - **Detection and Analysis**: Many security tools and antivirus programs are more focused on modern and widely-used languages like C# and C++. Code written in Pascal might be less detected or less studied, making the malware harder to identify.
@@ -27,7 +27,6 @@
 5. **Programming Style**
    - **Personal Preference**: Some malware creators may simply prefer Pascal or have more experience with it compared to C#. The choice of language can reflect their personal experience and skill set.
 
-Overall, the choice of programming language for creating malware depends on the specific needs of the attack, the creator’s expertise, and strategies for evading security measures. While C# is a powerful and modern language, Pascal can offer advantages in particular contexts and less common scenarios.
 
 
 ### Request a TGS (or better a TGT!) on behalf of another logged user:
