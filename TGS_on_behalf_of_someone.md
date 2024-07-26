@@ -10,7 +10,7 @@ There are various ways to abuse a user's session on a device. But did you know t
 
 Giuda allows you to get the tickets of the logged-in user even without having his password! Today we will understand how GIUDA works
 
-What is TGT
+What is (for the umpteenth time) a TGT
 A TGT is a special type of ticket that is issued to a user upon successful authentication in the Kerberos system. This process is carried out using the user's password and prevents the password from being transmitted over the network.
 
 Here's how TGT works.
@@ -27,11 +27,9 @@ A user can use TGT to request tickets to access various resources on the network
 Each ticket contains information about a specific resource and is protected by a session key, which ensures the security of the transfer.
 
 
-Logon session
+What's a Logon session
 
-When a user is authorized in Windows, a user session is created, in which all user data is stored. A new session is created for all new users. For example, if there are two users on the machine at the same time, there will be two sessions.
-
-![immagine](https://github.com/user-attachments/assets/b47233c7-510a-401a-9a10-207c7c8e722b)
+When a user is authorized in Windows, a user session is created, in which all user data is stored. A new session is created for all new users on the Windows machine.
 
 Each session has a LUID (Locally Unique Identifier) name. As the name suggests, LUID is unique for each session. The information is stored in a structure format.
 
