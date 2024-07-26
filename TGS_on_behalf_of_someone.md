@@ -34,20 +34,20 @@ When a user is authorized in Windows, a user session is created, in which all us
 
 Each session has a LUID (Locally Unique Identifier) name. As the name suggests, LUID is unique for each session. The information is stored in a structure format.
 
-'''
+```
 type
     _LUID = record
     LowPart: DWORD;
     HighPart: LongInt;
   end;
-'''
+```
 
-'''
+```
 typedef struct _LUID {
 ULONG LowPart;
 LONG HighPart;
 } LUID, *PLUID;
-'''
+```
 
 The LUID itself is represented by two values: ULONG and LONG. In this case, usually only the field is filled in LowPartand HighPart matters.
 
@@ -60,7 +60,7 @@ Now it's time to show how Kerberos tickets are requested by the LSA itself. This
 How the LSA requests Kerberos tickets
 To request a TGS ticket, the LSA receives an SPN (service principal name) and passes it to the KDC. We can request TGS tickets ourselves. For this, there is a function LsaCallAuthenticationPackage().
 
-'''
+```
 function LsaCallAuthenticationPackage (
     LsaHandle : THandle;
     AuthenticationPackage : ULONG;
@@ -69,9 +69,9 @@ function LsaCallAuthenticationPackage (
     var ProtocolReturnBuffer : pointer;
     var ReturnBufferLength : ULONG;
     var ProtocolStatus : NTStatus) : NTSTATUS; stdcall;
-'''
+```
 
-'''
+```
 NTSTATUS LsaCallAuthenticationPackage(
   [in]  HANDLE  LsaHandle,
   [in]  ULONG   AuthenticationPackage,
@@ -81,7 +81,7 @@ NTSTATUS LsaCallAuthenticationPackage(
   [out] PULONG  ReturnBufferLength,
   [out] PNTSTATUS ProtocolStatus
 );
-'''
+```
 
 where:
 LsaHandle - A handle pointing to the LSA service, which can be retrieved using LsaRegisterLogonProcess() or LsaConnectUntrusted();
@@ -94,7 +94,7 @@ ProtocolStatus is a value that will contain the error code from the AP.
 
 So, how to fill it out KERB_RETRIEVE_TKT_REQUESTto get a TGS ticket? The structure looks like this:
 
-'''
+```
 KERB_RETRIEVE_TKT_REQUEST =record
     MessageType:KERB_PROTOCOL_MESSAGE_TYPE;
     LogonId:_LUID;
@@ -105,9 +105,9 @@ KERB_RETRIEVE_TKT_REQUEST =record
     CredentialsHandle:SecHandle;
     end;
     PKERB_RETRIEVE_TKT_REQUEST=^KERB_RETRIEVE_TKT_REQUEST;
-'''
+```
 
-'''
+```
 typedef struct _KERB_RETRIEVE_TKT_REQUEST {
   KERB_PROTOCOL_MESSAGE_TYPE MessageType;
   LUID             LogonId;
@@ -117,7 +117,7 @@ typedef struct _KERB_RETRIEVE_TKT_REQUEST {
   LONG             EncryptionType;
   SecHandle          CredentialsHandle;
 } KERB_RETRIEVE_TKT_REQUEST, *PKERB_RETRIEVE_TKT_REQUEST;
-'''
+```
 
 where:
 MessageType is what we need to get from the AP. Specify KerbRetrieveEncodedTicketMessage;
@@ -136,40 +136,40 @@ First we list all the available sessions with undetected method "KLIST SESSIONS"
 
 The next step is to connect to the LSA using LsaRegisterLogonProcess()to pass the LUID to someone else's session. To call this function, you need the SeTcbPrivilege.
 
-'''
+```
 LsaRegisterLogonProcess:function(
      LogonProcessName:PLSA_STRING;
      LsaHandle:PHANDLE;
      SecurityMode:PLSA_OPERATIONAL_MODE
   ):NTSTATUS;stdcall;
-'''
+```
 
 
-'''
+```
 NTSTATUS LsaRegisterLogonProcess(
   [in]  PLSA_STRING           LogonProcessName,
   [out] PHANDLE               LsaHandle,
   [out] PLSA_OPERATIONAL_MODE SecurityMode
 );
-'''
+```
 
 The next step is to use LsaLookupAuthenticationPackage() get the Kerberos AP number.
 
-'''
+```
   LsaLookupAuthenticationPackage:function(
        LsaHandle:HANDLE;
        PackageName:PLSA_STRING;
        AuthenticationPackage:PULONG
  ):NTSTATUS ;stdcall;
-'''
+```
 
-'''
+```
 NTSTATUS LsaLookupAuthenticationPackage(
   [in]  HANDLE      LsaHandle,
   [in]  PLSA_STRING PackageName,
   [out] PULONG      AuthenticationPackage
 );
-'''
+```
 
 Finally, we have the handle, the LUID, and the Kerberos AP number. It's time for GIUDA to betray
 
@@ -178,21 +178,21 @@ To do this I used the function kuhl_m_kerberos_ask(target:string;export_:bool=fa
 This function uses LsaCallAuthenticationPackage to call the LSA, and LSA will now contact the KDC and receive a new ticket. If we try to extract it right away, it will not be valid. More precisely, it will not have a session key and you will not be able to use it.
 
 Therefore, after making sure that the call was successful, change CacheOptions to KERB_RETRIEVE_TICKET_AS_KERB_CRED and refer to the LSA.
-'''
+```
 (first call to LsaCallAuthenticationPackage)
 pKerbRetrieveRequest^.CacheOptions :=  KERB_RETRIEVE_TICKET_DEFAULT;
 ...
 (if success change the CacheOptions)
 pKerbRetrieveRequest^.CacheOptions:= pKerbRetrieveRequest^.CacheOptions or  KERB_RETRIEVE_TICKET_AS_KERB_CRED;
-'''
+```
 
-'''
+```
 (first call to LsaCallAuthenticationPackage)
 pKerbRetrieveRequest->CacheOptions = KERB_RETRIEVE_TICKET_DEFAULT;
 ...
 (if success change the CacheOptions)
 pKerbRetrieveRequest->CacheOptions = KERB_RETRIEVE_TICKET_AS_KERB_CRED;
-'''
+```
 
 Ticket got on behalf of other user without password, GIUDA betrayed!
 
