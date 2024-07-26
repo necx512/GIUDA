@@ -5,7 +5,7 @@
 "Is GIUDA there?"
 "No, he went to a dinner...!"
 "Again?"
-"Yes, but he says it's the last one."
+"Yes, but he said it's the last one."
 "Sure?!?!?"
 ```
 
