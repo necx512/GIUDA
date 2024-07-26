@@ -5,14 +5,13 @@
 4. Stealing a TGT ticket
 5. Then? If you make the right request then a TGS is the same as a TGT
 
+There are several methods to compromise a user's session on a device. Surprisingly, one of these involves spoofing a TGT ticket receipt using legitimate Windows functions
 
-There are various ways to abuse a user's session on a device. But did you know that it is possible to spoof a TGT ticket receipt by a user using legitimate Windows functions?
-
-Giuda allows you to get the tickets of the logged-in user even without having his password! Today we will understand how GIUDA works
+GIUDA allows you to get the tickets of the logged-in user even without having his password! Today we will understand how GIUDA works
 
 ### What is (for the umpteenth time) a TGT
 
-A TGT is a special type of ticket that is issued to a user upon successful authentication in the Kerberos system. This process is carried out using the user's password and prevents the password from being transmitted over the network.
+A Ticket Granting Ticket (TGT) is a unique type of ticket issued to a user upon successful authentication in the Kerberos system. Generated using the user's password, the TGT ensures that the password is never transmitted over the network, enhancing security..
 
 Here's how TGT works.
 
@@ -30,9 +29,9 @@ Each ticket contains information about a specific resource and is protected by a
 
 ### What's a Logon session
 
-When a user is authorized in Windows, a user session is created, in which all user data is stored. A new session is created for all new users on the Windows machine.
+When a user logs into Windows, a user session is created where all user data is stored. Each new user on the Windows machine initiates a new session.
 
-Each session has a LUID (Locally Unique Identifier) name. As the name suggests, LUID is unique for each session. The information is stored in a structure format.
+Each session is assigned a Locally Unique Identifier (LUID). As the name suggests, the LUID is unique to each session. This information is stored in a structured format.
 
 Pascal
 ```
